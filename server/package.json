@@ -1,0 +1,23 @@
+{
+  "name": "ai-careeros-server",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node --watch src/server.js",
+    "start": "node src/server.js"
+  },
+  "dependencies": {
+    "axios": "^1.20.0",
+    "bcryptjs": "latest",
+    "cors": "latest",
+    "dotenv": "latest",
+    "express": "latest",
+    "express-rate-limit": "^8.7.0",
+    "helmet": "^8.3.0",
+    "jsonwebtoken": "latest",
+    "mongoose": "latest",
+    "multer": "^2.3.0",
+    "pdfjs-dist": "^4.10.38"
+  }
+}
