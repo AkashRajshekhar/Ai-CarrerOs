@@ -1,44 +1,51 @@
 # AI CareerOS 🚀
 
-AI CareerOS is an AI-powered career guidance platform built with the **MERN stack**. It helps students analyze their resumes, find suitable career paths, identify skill gaps, and prepare for jobs and interviews.
+AI CareerOS is an AI-powered career guidance platform built with the **MERN stack**. It helps students analyze resumes, discover career paths, identify skill gaps, and prepare for jobs and interviews.
 
 ## ✨ Features
 
-* 🔐 JWT-based Authentication
-* 📄 AI Resume Analyzer
-* 🎯 AI Career Recommendations
-* 📊 Skill Gap Analysis
-* 🗺️ Personalized Learning Roadmap
-* 💼 AI Job Matching
-* 🎤 AI Interview Preparation
-* 🤖 AI Career Assistant
-* 📈 Career Progress Dashboard
+* AI Resume Analyzer
+* Career Recommendations
+* Skill Gap Analysis
+* Personalized Roadmap
+* AI Job Matching
+* Interview Preparation
+* AI Career Assistant
+* Career Dashboard
 
 ## 🛠️ Tech Stack
 
-**Frontend:** React.js, Vite, Tailwind CSS, Axios
-**Backend:** Node.js, Express.js, JWT, bcrypt
+**Frontend:** React.js, Vite, Tailwind CSS
+**Backend:** Node.js, Express.js
 **Database:** MongoDB, Mongoose
 **AI:** LLM API
 
-## ⚙️ Setup
+## 🚀 Clone & Run
 
 ```bash
-# Clone repository
-git clone https://github.com/YOUR_USERNAME/ai-careeros.git
+git clone https://github.com/AkashRajshekhar/ai-careeros.git
+cd ai-careeros
+```
 
-# Frontend
-cd client
-npm install
-npm run dev
+### Backend
 
-# Backend
-cd ../server
+```bash
+cd server
 npm install
 npm run dev
 ```
 
-Create a `.env` file in the `server` folder:
+### Frontend
+
+Open a new terminal:
+
+```bash
+cd client
+npm install
+npm run dev
+```
+
+Create a `.env` file inside `server`:
 
 ```env
 PORT=5000
@@ -47,20 +54,6 @@ JWT_SECRET=your_jwt_secret
 AI_API_KEY=your_ai_api_key
 AI_API_URL=your_ai_api_url
 ```
-
-## 📂 Project Structure
-
-```text
-AI-CareerOS/
-├── client/     # React frontend
-├── server/     # Node.js + Express backend
-├── README.md
-└── .gitignore
-```
-
-## 🎯 Goal
-
-To provide students with a single AI-powered platform for **career planning, resume improvement, skill development, job matching, and interview preparation**.
 
 ## 👨‍💻 Author
 
