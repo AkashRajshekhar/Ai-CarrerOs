@@ -44,15 +44,13 @@ const allowedOrigins = new Set([
 
 app.use(
   cors({
-    credentials: true,
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.has(origin)) {
-        return callback(null, true);
-      }
+   
+    origin: "https://ai-carreros-frontend.onrender.com",
+     credentials: true
 
-      return callback(new Error("Origin is not allowed by CORS"));
+      
     },
-  }),
+
 );
 app.use(helmet());
 app.use(express.json({ limit: "100kb" }));
