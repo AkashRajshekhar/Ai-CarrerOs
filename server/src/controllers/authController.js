@@ -6,8 +6,8 @@ const cookieOptions = () => {
   const sameSite = (process.env.AUTH_COOKIE_SAME_SITE || "lax").toLowerCase();
   return {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production" || sameSite === "none",
-    sameSite,
+    secure: true,
+    sameSite: "none",
     path: "/",
   };
 };
