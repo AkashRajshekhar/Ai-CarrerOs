@@ -52,13 +52,7 @@ const allowedOrigins = new Set([
 // CORS Configuration
 app.use(
   cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.has(origin)) {
-        return callback(null, true);
-      }
-
-      return callback(new Error("Not allowed by CORS"));
-    },
+    origin:"https://ai-carreros-frontend1.onrender.com" ,
     credentials: true,
   })
 );
