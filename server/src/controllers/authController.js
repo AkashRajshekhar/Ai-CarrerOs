@@ -1,16 +1,14 @@
+
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
-const cookieOptions = () => {
-  const sameSite = (process.env.AUTH_COOKIE_SAME_SITE || "lax").toLowerCase();
-  return {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-    path: "/",
-  };
-};
+const cookieOptions = () => ({
+  httpOnly: true,
+  secure: true,
+  sameSite: "none",
+  path: "/",
+});
 
 const setAuthCookie = (response, token) => {
   response.cookie("careeros-token", token, {
@@ -24,7 +22,9 @@ const clearAuthCookie = (response) => {
 };
 
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+  return jwt.sign({ id }, process.env.JWT_SECRET, {
+    expiresIn: "7d",
+  });
 };
 
 export const signup = async (request, response) => {
@@ -43,6 +43,7 @@ export const signup = async (request, response) => {
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
     if (!emailRegex.test(email)) {
       return response.status(400).json({
         success: false,
@@ -79,6 +80,7 @@ export const signup = async (request, response) => {
     }
 
     const existingUser = await User.findOne({ email });
+
     if (existingUser) {
       return response.status(409).json({
         success: false,
@@ -103,7 +105,6 @@ export const signup = async (request, response) => {
     return response.status(201).json({
       success: true,
       message: "User created successfully",
-      token,
       user: {
         id: user._id,
         name: user.name,
@@ -119,6 +120,7 @@ export const signup = async (request, response) => {
         message: "User with this email already exists",
       });
     }
+
     return response.status(500).json({
       success: false,
       message: "Server error during signup",
@@ -139,6 +141,7 @@ export const login = async (request, response) => {
     }
 
     const user = await User.findOne({ email: normalizedEmail });
+
     if (!user) {
       return response.status(401).json({
         success: false,
@@ -146,7 +149,11 @@ export const login = async (request, response) => {
       });
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(
+      password,
+      user.password
+    );
+
     if (!isPasswordValid) {
       return response.status(401).json({
         success: false,
@@ -160,7 +167,6 @@ export const login = async (request, response) => {
     return response.status(200).json({
       success: true,
       message: "Login successful",
-      token,
       user: {
         id: user._id,
         name: user.name,
@@ -173,7 +179,6 @@ export const login = async (request, response) => {
     return response.status(500).json({
       success: false,
       message: "Server error during login",
-      error: error.message,
     });
   }
 };
@@ -188,13 +193,13 @@ export const getCurrentUser = async (request, response) => {
     return response.status(500).json({
       success: false,
       message: "Unable to fetch user details",
-      error: error.message,
     });
   }
 };
 
 export const logout = (request, response) => {
   clearAuthCookie(response);
+
   return response.status(200).json({
     success: true,
     message: "Logged out successfully",
@@ -205,80 +210,113 @@ export const updateAccount = async (request, response) => {
   try {
     const name = request.body.name?.trim();
     const email = request.body.email?.trim().toLowerCase();
+
     if (!name || !email) {
-      return response
-        .status(400)
-        .json({ success: false, message: "Name and email are required." });
+      return response.status(400).json({
+        success: false,
+        message: "Name and email are required.",
+      });
     }
 
     const emailOwner = await User.findOne({
       email,
       _id: { $ne: request.user._id },
     });
+
     if (emailOwner) {
-      return response
-        .status(409)
-        .json({ success: false, message: "That email is already in use." });
+      return response.status(409).json({
+        success: false,
+        message: "That email is already in use.",
+      });
     }
 
     const user = await User.findByIdAndUpdate(
       request.user._id,
       { $set: { name, email } },
-      { new: true, runValidators: true },
+      { new: true, runValidators: true }
     ).select("-password");
 
-    return response.status(200).json({ success: true, user });
+    return response.status(200).json({
+      success: true,
+      user,
+    });
   } catch (error) {
     if (error.code === 11000 && error.keyPattern?.email) {
-      return response
-        .status(409)
-        .json({ success: false, message: "That email is already in use." });
+      return response.status(409).json({
+        success: false,
+        message: "That email is already in use.",
+      });
     }
-    return response
-      .status(500)
-      .json({ success: false, message: "Unable to update account." });
+
+    return response.status(500).json({
+      success: false,
+      message: "Unable to update account.",
+    });
   }
 };
 
 export const changePassword = async (request, response) => {
   try {
     const { currentPassword, newPassword, confirmPassword } = request.body;
+
     if (!currentPassword || !newPassword || !confirmPassword) {
-      return response
-        .status(400)
-        .json({ success: false, message: "All password fields are required." });
+      return response.status(400).json({
+        success: false,
+        message: "All password fields are required.",
+      });
     }
+
     if (newPassword.length < 6) {
-      return response
-        .status(400)
-        .json({
-          success: false,
-          message: "New password must be at least 6 characters long.",
-        });
+      return response.status(400).json({
+        success: false,
+        message: "New password must be at least 6 characters long.",
+      });
     }
+
     if (newPassword !== confirmPassword) {
-      return response
-        .status(400)
-        .json({ success: false, message: "New passwords do not match." });
+      return response.status(400).json({
+        success: false,
+        message: "New passwords do not match.",
+      });
     }
 
     const user = await User.findById(request.user._id);
-    const validPassword = await bcrypt.compare(currentPassword, user.password);
-    if (!validPassword) {
-      return response
-        .status(401)
-        .json({ success: false, message: "Current password is incorrect." });
+
+    if (!user) {
+      return response.status(404).json({
+        success: false,
+        message: "User not found.",
+      });
     }
 
-    user.password = await bcrypt.hash(newPassword, await bcrypt.genSalt(10));
+    const validPassword = await bcrypt.compare(
+      currentPassword,
+      user.password
+    );
+
+    if (!validPassword) {
+      return response.status(401).json({
+        success: false,
+        message: "Current password is incorrect.",
+      });
+    }
+
+    user.password = await bcrypt.hash(
+      newPassword,
+      await bcrypt.genSalt(10)
+    );
+
     await user.save();
-    return response
-      .status(200)
-      .json({ success: true, message: "Password changed successfully." });
+
+    return response.status(200).json({
+      success: true,
+      message: "Password changed successfully.",
+    });
   } catch (error) {
-    return response
-      .status(500)
-      .json({ success: false, message: "Unable to change password." });
+    return response.status(500).json({
+      success: false,
+      message: "Unable to change password.",
+    });
   }
 };
 
@@ -286,12 +324,15 @@ export const deleteAccount = async (request, response) => {
   try {
     await User.findByIdAndDelete(request.user._id);
     clearAuthCookie(response);
-    return response
-      .status(200)
-      .json({ success: true, message: "Account deleted successfully." });
+
+    return response.status(200).json({
+      success: true,
+      message: "Account deleted successfully.",
+    });
   } catch (error) {
-    return response
-      .status(500)
-      .json({ success: false, message: "Unable to delete account." });
+    return response.status(500).json({
+      success: false,
+      message: "Unable to delete account.",
+    });
   }
 };
