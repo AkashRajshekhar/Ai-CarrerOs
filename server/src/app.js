@@ -42,7 +42,7 @@ const allowedOrigins = new Set([
   "http://localhost:5174",
   "http://127.0.0.1:5173",
   "http://127.0.0.1:5174",
-  "https://ai-carreros-frontend.onrender.com",
+  "https://ai-carreros-frontend1.onrender.com",
   ...(process.env.CLIENT_URL || "")
     .split(",")
     .map((origin) => origin.trim())
