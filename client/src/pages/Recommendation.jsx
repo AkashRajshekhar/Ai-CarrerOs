@@ -18,7 +18,12 @@ export default function Recommendation() {
                 })
                 setData(response.data.data)
             } catch (err) {
-                setError(err.response?.data?.message || 'Unable to load your recommendation yet.')
+                if (err.response?.status === 404) {
+                    setData(null)
+                    setError('')
+                } else {
+                    setError(err.response?.data?.message || 'Unable to load your recommendation yet.')
+                }
             } finally {
                 setLoading(false)
             }
@@ -32,7 +37,7 @@ export default function Recommendation() {
             <div className="mx-auto max-w-5xl">
                 <div className="mb-6 flex items-center justify-between gap-4">
                     <div>
-                        <p className="text-sm uppercase tracking-[0.2em] text-cyan-300">Phase 6</p>
+                        <p className="text-sm uppercase tracking-[0.2em] text-cyan-300">Your direction</p>
                         <h1 className="mt-2 text-3xl font-semibold">Career Recommendation</h1>
                     </div>
                     <button

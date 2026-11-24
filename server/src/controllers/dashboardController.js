@@ -84,6 +84,7 @@ export const getDashboardSummary = async (request, response) => {
           { label: "Skills", value: skillCompletion },
           { label: "Roadmap", value: roadmapProgress },
         ],
+        skillGapSkills: skillGap?.skills || [],
         recommendedJobs: roleSuggestions[career] || [career],
         profileComplete: Boolean(profile),
         hasAssessment: Boolean(assessment?.result),

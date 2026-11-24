@@ -77,7 +77,7 @@ export default function AdminDashboard() {
             <div className="mx-auto max-w-6xl">
                 <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                     <div>
-                        <p className="text-sm uppercase tracking-[0.2em] text-cyan-300">Phase 15</p>
+                        <p className="text-sm uppercase tracking-[0.2em] text-cyan-300">Platform control</p>
                         <h1 className="mt-2 text-3xl font-semibold">Admin Dashboard</h1>
                         <p className="mt-2 text-slate-400">Manage platform access and student accounts.</p>
                     </div>
@@ -95,9 +95,10 @@ export default function AdminDashboard() {
 
                 {!loading && !error && data && (
                     <>
-                        <div className="grid gap-4 sm:grid-cols-3">
+                        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                             <Stat icon={Users} label="Total users" value={data.stats.totalUsers} />
-                            <Stat icon={Users} label="Students" value={data.stats.students} />
+                            <Stat icon={Users} label="Candidates" value={data.stats.students} />
+                            <Stat icon={Users} label="Recruiters" value={data.stats.recruiters || 0} />
                             <Stat icon={ShieldCheck} label="Admins" value={data.stats.admins} />
                         </div>
 
@@ -124,7 +125,7 @@ export default function AdminDashboard() {
                                 <EmptyState title="No users yet" message="Once students sign up, they'll show up here." />
                             ) : (
                                 <div className="overflow-x-auto rounded-2xl border border-white/5">
-                                    <table className="w-full min-w-[650px] text-left text-sm">
+                                    <table className="w-full min-w-162.5 text-left text-sm">
                                         <thead className="border-b border-white/10 bg-white/5 text-xs uppercase tracking-wide text-slate-400">
                                             <tr>
                                                 <th className="px-4 py-3">User</th>
@@ -160,6 +161,7 @@ export default function AdminDashboard() {
                                                                 className="rounded-lg border border-slate-700 bg-slate-950 px-2 py-2 text-slate-200 transition focus:border-cyan-400 disabled:opacity-40"
                                                             >
                                                                 <option value="student">Student</option>
+                                                                <option value="recruiter">Recruiter</option>
                                                                 <option value="admin">Admin</option>
                                                             </select>
                                                             {isUpdating && <span className="ml-2 text-xs text-slate-400">Saving...</span>}

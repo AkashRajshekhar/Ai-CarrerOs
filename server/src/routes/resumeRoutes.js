@@ -1,6 +1,8 @@
 import express from "express";
+import fs from "node:fs";
 import multer from "multer";
 import path from "path";
+import { fileURLToPath } from "node:url";
 import {
   getResumeAnalysis,
   uploadResume,
@@ -8,10 +10,16 @@ import {
 import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
+const uploadDirectory = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  "../uploads",
+);
+
+fs.mkdirSync(uploadDirectory, { recursive: true });
 
 const storage = multer.diskStorage({
   destination: (_request, _file, callback) => {
-    callback(null, path.resolve(process.cwd(), "src/uploads"));
+    callback(null, uploadDirectory);
   },
   filename: (_request, file, callback) => {
     callback(null, `${Date.now()}-${Math.random().toString(36).slice(2)}.pdf`);

@@ -13,6 +13,8 @@ AI CareerOS is an AI-powered career guidance platform built with the **MERN stac
 * 🎤 AI Interview Preparation
 * 🤖 AI Career Assistant
 * 📈 Career Progress Dashboard
+* 🧑‍💼 Recruiter job management and application review
+* 🔖 Candidate job saving and application tracking
 
 ## 🛠️ Tech Stack
 
@@ -47,6 +49,16 @@ JWT_SECRET=your_jwt_secret
 AI_API_KEY=your_ai_api_key
 AI_API_URL=your_ai_api_url
 ```
+
+The API reads `MONGODB_URI` from the server or repository root `.env` file. Recruiter accounts require a company name and are not independently verified. Recruiters can manage their own postings and review applications; candidates can save jobs and submit one application per listing.
+
+To add the labeled demonstration listings to the configured MongoDB database, run:
+
+```bash
+npm run seed:jobs --prefix server
+```
+
+These records are explicitly marked as samples and are not verified vacancies.
 
 ## 📂 Project Structure
 

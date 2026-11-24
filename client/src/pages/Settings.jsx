@@ -17,6 +17,7 @@ export default function Settings() {
         const token = localStorage.getItem('careeros-token')
         const response = await fetch(`${API_URL}${path}`, {
             ...options,
+            credentials: 'include',
             headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         })
         const data = await response.json()
@@ -56,7 +57,7 @@ export default function Settings() {
     return (
         <main className="min-h-screen bg-slate-950 px-4 py-8 text-white">
             <div className="mx-auto max-w-4xl">
-                <div className="mb-8 flex items-center justify-between gap-4"><div><p className="text-sm uppercase tracking-[0.2em] text-cyan-300">Phase 14</p><h1 className="mt-2 text-3xl font-semibold">Settings</h1></div><button type="button" onClick={() => navigate('/dashboard')} className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 hover:bg-white/10">Back to dashboard</button></div>
+                <div className="mb-8 flex items-center justify-between gap-4"><div><p className="text-sm uppercase tracking-[0.2em] text-cyan-300">Account preferences</p><h1 className="mt-2 text-3xl font-semibold">Settings</h1></div><button type="button" onClick={() => navigate('/dashboard')} className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 hover:bg-white/10">Back to dashboard</button></div>
                 {message && <div className="mb-5 rounded-xl border border-emerald-400/30 bg-emerald-400/10 p-3 text-sm text-emerald-200">{message}</div>}
                 {error && <div className="mb-5 rounded-xl border border-red-500/40 bg-red-500/10 p-3 text-sm text-red-200">{error}</div>}
                 <div className="grid gap-6 lg:grid-cols-2">

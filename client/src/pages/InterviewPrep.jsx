@@ -18,6 +18,8 @@ export default function InterviewPrep() {
 
     useEffect(() => {
         const fetchQuestions = async () => {
+            setLoading(true)
+            setError('')
             try {
                 const token = localStorage.getItem('careeros-token')
                 const response = await axios.get('http://localhost:5000/api/interview', {
@@ -25,7 +27,12 @@ export default function InterviewPrep() {
                     headers: { Authorization: `Bearer ${token}` },
                 })
 
-                setQuestions(response.data.data.questions)
+                const uniqueQuestions = response.data.data.questions.filter((question, index, allQuestions) => (
+                    allQuestions.findIndex((candidate) => candidate.prompt.trim().toLowerCase() === question.prompt.trim().toLowerCase()) === index
+                ))
+                setQuestions(uniqueQuestions)
+                setAnswers({})
+                setTextAnswers({})
             } catch (err) {
                 setError(err.response?.data?.message || 'Unable to load interview questions.')
             } finally {
@@ -68,7 +75,7 @@ export default function InterviewPrep() {
             <div className="mx-auto max-w-5xl">
                 <div className="mb-6 flex items-center justify-between gap-4">
                     <div>
-                        <p className="text-sm uppercase tracking-[0.2em] text-cyan-300">Phase 12</p>
+                        <p className="text-sm uppercase tracking-[0.2em] text-cyan-300">Practice room</p>
                         <h1 className="mt-2 text-3xl font-semibold">Interview Prep</h1>
                     </div>
                     <button
@@ -83,7 +90,7 @@ export default function InterviewPrep() {
                 {error && <ErrorState message={error} />}
 
                 <section className="mb-6 grid gap-4 rounded-3xl border border-white/10 bg-slate-900 p-5 md:grid-cols-3">
-                    <SelectField label="Role" value={role} onChange={setRole} options={['Frontend Developer', 'Backend Developer', 'Full Stack Developer', 'AI / ML Engineer']} />
+                    <SelectField label="Role" value={role} onChange={setRole} options={['Frontend Developer', 'Backend Developer', 'Full Stack Developer', 'React Developer', 'Data Analyst', 'AI / ML Engineer', 'Cloud Engineer', 'Cybersecurity Analyst', 'UX Designer', 'Product Manager', 'QA Automation Engineer']} />
                     <SelectField label="Difficulty" value={difficulty} onChange={setDifficulty} options={['Beginner', 'Intermediate', 'Advanced']} />
                     <SelectField label="Interview type" value={interviewType} onChange={setInterviewType} options={['Technical', 'HR', 'Behavioral', 'Coding']} />
                 </section>

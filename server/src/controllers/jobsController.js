@@ -1,68 +1,7 @@
 import Profile from "../models/Profile.js";
 import Job from "../models/Job.js";
-
-const jobs = [
-  {
-    id: "frontend-001",
-    title: "Frontend Developer",
-    company: "Northstar Labs",
-    location: "Remote",
-    mode: "Remote",
-    type: "Full-time",
-    career: "Frontend Developer",
-    skills: ["React", "JavaScript", "CSS"],
-    description:
-      "Build accessible product interfaces with a small, collaborative product team.",
-  },
-  {
-    id: "fullstack-001",
-    title: "Junior Full Stack Engineer",
-    company: "Orbit Systems",
-    location: "Bengaluru",
-    mode: "Hybrid",
-    type: "Full-time",
-    career: "Full Stack Developer",
-    skills: ["React", "Node.js", "MongoDB"],
-    description:
-      "Ship customer-facing features across the web application and API layers.",
-  },
-  {
-    id: "backend-001",
-    title: "Backend Engineer Intern",
-    company: "DataDock",
-    location: "Remote",
-    mode: "Remote",
-    type: "Internship",
-    career: "Backend Developer",
-    skills: ["Node.js", "REST APIs", "Databases"],
-    description:
-      "Learn production API development while improving reliability and observability.",
-  },
-  {
-    id: "data-001",
-    title: "Data Analyst",
-    company: "Clearview Finance",
-    location: "Mumbai",
-    mode: "On-site",
-    type: "Full-time",
-    career: "Data Analyst",
-    skills: ["SQL", "Excel", "Power BI"],
-    description:
-      "Turn operational data into dashboards and decisions for business teams.",
-  },
-  {
-    id: "cloud-001",
-    title: "Cloud Operations Associate",
-    company: "Stackline Cloud",
-    location: "Hyderabad",
-    mode: "Hybrid",
-    type: "Full-time",
-    career: "Cloud / DevOps Engineer",
-    skills: ["Linux", "AWS", "CI/CD"],
-    description:
-      "Support dependable deployments and automate recurring cloud operations.",
-  },
-];
+import User from "../models/User.js";
+import JobApplication from "../models/JobApplication.js";
 
 const normalize = (value) =>
   value
@@ -80,8 +19,9 @@ const getProfileSkills = (profile) =>
   ].map(normalize);
 
 const buildJobMatch = (job, profile) => {
+  const requiredSkills = (job.skills || []).filter(Boolean);
   const studentSkills = getProfileSkills(profile);
-  const matchingSkills = job.skills.filter((skill) => {
+  const matchingSkills = requiredSkills.filter((skill) => {
     const normalizedSkill = normalize(skill);
     return studentSkills.some(
       (studentSkill) =>
@@ -89,10 +29,12 @@ const buildJobMatch = (job, profile) => {
         normalizedSkill.includes(studentSkill),
     );
   });
-  const missingSkills = job.skills.filter(
+  const missingSkills = requiredSkills.filter(
     (skill) => !matchingSkills.includes(skill),
   );
-  const score = Math.round((matchingSkills.length / job.skills.length) * 100);
+  const score = requiredSkills.length
+    ? Math.round((matchingSkills.length / requiredSkills.length) * 100)
+    : 0;
 
   return {
     score,
@@ -103,41 +45,78 @@ const buildJobMatch = (job, profile) => {
       : "Build the required skills through a focused project before applying.",
     recommendation: missingSkills.length
       ? `Prioritize ${missingSkills.slice(0, 2).join(" and ")} to improve your fit.`
-      : "Your listed skills cover the core requirements for this sample role.",
+      : "Your listed skills cover the core requirements for this role.",
   };
 };
 
-export const getJobs = (request, response) => {
-  const search = request.query.search?.trim().toLowerCase() || "";
-  const mode = request.query.mode?.trim().toLowerCase() || "all";
+const toJobResponse = (job) => {
+  const isSample = job.description?.startsWith("SAMPLE LISTING:") || false;
+  const description = isSample
+    ? job.description.replace(/^SAMPLE LISTING:\s*/, "")
+    : job.description;
+  const mode = /\bhybrid\b/i.test(job.location)
+    ? "Hybrid"
+    : job.remote
+      ? "Remote"
+      : "On-site";
 
-  const filteredJobs = jobs.filter((job) => {
-    const matchesMode = mode === "all" || job.mode.toLowerCase() === mode;
-    const searchableText = [
-      job.title,
-      job.company,
-      job.location,
-      job.career,
-      ...job.skills,
-    ]
-      .join(" ")
-      .toLowerCase();
-    return matchesMode && searchableText.includes(search);
-  });
+  return {
+    ...job,
+    id: String(job._id),
+    mode,
+    type: job.employmentType,
+    description,
+    isSample,
+  };
+};
 
-  return response.status(200).json({
-    success: true,
-    data: {
-      jobs: filteredJobs,
-      total: filteredJobs.length,
-      modes: ["All", "Remote", "Hybrid", "On-site"],
-    },
-  });
+const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+export const getJobs = async (request, response) => {
+  try {
+    const search = request.query.search?.trim();
+    const mode = request.query.mode?.trim().toLowerCase() || "all";
+    const query = { isPublished: true };
+
+    if (search) {
+      const searchRegex = new RegExp(escapeRegex(search), "i");
+      query.$or = [
+        { title: searchRegex },
+        { company: searchRegex },
+        { location: searchRegex },
+        { career: searchRegex },
+        { skills: searchRegex },
+      ];
+    }
+
+    if (mode === "remote") query.remote = true;
+    if (mode === "hybrid") query.location = { $regex: "\\bhybrid\\b", $options: "i" };
+    if (mode === "on-site") {
+      query.remote = false;
+      query.location = { $not: /\bhybrid\b/i };
+    }
+
+    const documents = await Job.find(query).sort({ createdAt: -1 }).lean();
+    const jobs = documents.map(toJobResponse);
+
+    return response.status(200).json({
+      success: true,
+      data: { jobs, total: jobs.length, modes: ["All", "Remote", "Hybrid", "On-site"] },
+    });
+  } catch (error) {
+    return response.status(500).json({
+      success: false,
+      message: "Unable to load job listings.",
+    });
+  }
 };
 
 export const getJobMatch = async (request, response) => {
   try {
-    const job = jobs.find((item) => item.id === request.params.id);
+    const job = await Job.findOne({
+      _id: request.params.id,
+      isPublished: true,
+    }).lean();
     if (!job) {
       return response.status(404).json({
         success: false,
@@ -149,7 +128,7 @@ export const getJobMatch = async (request, response) => {
     return response.status(200).json({
       success: true,
       data: {
-        job,
+        job: toJobResponse(job),
         match: buildJobMatch(job, profile),
       },
     });
@@ -163,10 +142,6 @@ export const getJobMatch = async (request, response) => {
 
 export const getJobById = async (request, response) => {
   try {
-    const sampleJob = jobs.find((item) => item.id === request.params.id);
-    if (sampleJob)
-      return response.status(200).json({ success: true, data: sampleJob });
-
     const job = await Job.findOne({
       _id: request.params.id,
       isPublished: true,
@@ -175,10 +150,85 @@ export const getJobById = async (request, response) => {
       return response
         .status(404)
         .json({ success: false, message: "Job not found." });
-    return response.status(200).json({ success: true, data: job });
+    return response.status(200).json({
+      success: true,
+      data: toJobResponse(job),
+    });
   } catch (error) {
     return response
       .status(404)
       .json({ success: false, message: "Job not found." });
+  }
+};
+
+export const getSavedJobs = async (request, response) => {
+  try {
+    const user = await User.findById(request.user._id)
+      .select("savedJobs")
+      .populate({ path: "savedJobs", match: { isPublished: true } })
+      .lean();
+    const jobs = (user?.savedJobs || []).map(toJobResponse);
+    return response.status(200).json({ success: true, data: { jobs } });
+  } catch (error) {
+    return response.status(500).json({ success: false, message: "Unable to load saved jobs." });
+  }
+};
+
+export const saveJob = async (request, response) => {
+  try {
+    const job = await Job.findOne({ _id: request.params.id, isPublished: true });
+    if (!job) return response.status(404).json({ success: false, message: "Job not found." });
+    await User.updateOne({ _id: request.user._id }, { $addToSet: { savedJobs: job._id } });
+    return response.status(200).json({ success: true, data: { saved: true } });
+  } catch (error) {
+    return response.status(500).json({ success: false, message: "Unable to save this job." });
+  }
+};
+
+export const unsaveJob = async (request, response) => {
+  try {
+    await User.updateOne({ _id: request.user._id }, { $pull: { savedJobs: request.params.id } });
+    return response.status(200).json({ success: true, data: { saved: false } });
+  } catch (error) {
+    return response.status(500).json({ success: false, message: "Unable to remove this saved job." });
+  }
+};
+
+export const applyForJob = async (request, response) => {
+  try {
+    const job = await Job.findOne({ _id: request.params.id, isPublished: true }).lean();
+    if (!job) return response.status(404).json({ success: false, message: "Job not found." });
+
+    const application = await JobApplication.create({
+      candidate: request.user._id,
+      job: job._id,
+      resumeUrl: request.body.resumeUrl?.trim(),
+      coverLetter: request.body.coverLetter?.trim(),
+    });
+    return response.status(201).json({
+      success: true,
+      message: "Application submitted.",
+      data: application,
+    });
+  } catch (error) {
+    if (error.code === 11000) {
+      return response.status(409).json({ success: false, message: "You have already applied for this job." });
+    }
+    if (error.name === "ValidationError") {
+      return response.status(400).json({ success: false, message: "Please provide valid application details." });
+    }
+    return response.status(500).json({ success: false, message: "Unable to submit your application." });
+  }
+};
+
+export const getMyApplications = async (request, response) => {
+  try {
+    const applications = await JobApplication.find({ candidate: request.user._id })
+      .populate("job", "title company location salary employmentType")
+      .sort({ createdAt: -1 })
+      .lean();
+    return response.status(200).json({ success: true, data: { applications } });
+  } catch (error) {
+    return response.status(500).json({ success: false, message: "Unable to load your applications." });
   }
 };

@@ -1,9 +1,10 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 
 export default function Login() {
     const navigate = useNavigate()
+    const location = useLocation()
     const { login } = useAuth()
     const [form, setForm] = useState({ email: '', password: '' })
     const [error, setError] = useState('')
@@ -22,8 +23,9 @@ export default function Login() {
         setLoading(true)
 
         try {
-            await login(form.email, form.password)
-            navigate('/onboarding')
+            const result = await login(form.email, form.password)
+            const destination = location.state?.from
+            navigate(typeof destination === 'string' ? destination : destination?.pathname || (result.user?.role === 'recruiter' ? '/recruiter' : result.user?.role === 'admin' ? '/admin' : '/dashboard'), { replace: true })
         } catch (err) {
             setError(err.userMessage || err.response?.data?.message || 'Unable to login. Please try again.')
         } finally {

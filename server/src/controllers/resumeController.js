@@ -1,7 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
-import * as pdfjs from "pdfjs-dist";
+import * as pdfjs from "pdfjs-dist/legacy/build/pdf.mjs";
 import axios from "axios";
 import ResumeAnalysis from "../models/ResumeAnalysis.js";
 
@@ -77,7 +77,7 @@ const callGeminiWithRetry = async ({
             "Content-Type": "application/json",
             "x-goog-api-key": apiKey,
           },
-          timeout: 60000,
+          timeout: 30000,
         },
       );
 
@@ -111,7 +111,7 @@ const callGeminiWithRetry = async ({
         break;
       }
 
-      const delay = attempt * 5000;
+      const delay = attempt * 1200;
 
       console.log(
         `Retrying Gemini API in ${delay / 1000} seconds...`,
@@ -132,7 +132,7 @@ const callGeminiWithRetry = async ({
 |--------------------------------------------------------------------------
 */
 
-const analyzeResumeWithAI = async (resumeText) => {
+export const analyzeResumeWithAI = async (resumeText) => {
   const apiKey = process.env.GEMINI_API_KEY;
 
   if (!apiKey) {
@@ -156,9 +156,8 @@ const analyzeResumeWithAI = async (resumeText) => {
 
   const modelsToTry = [
     process.env.GEMINI_MODEL,
-    "gemini-3.6-flash",
-    "gemini-2.0-flash",
-    "gemini-flash-latest",
+    "gemini-3.5-flash",
+    "gemini-3.5-flash-lite",
   ].filter(Boolean);
 
   // Remove duplicates while keeping order.
@@ -316,7 +315,7 @@ ATS score should evaluate:
         apiUrl,
         apiKey,
         requestBody,
-        maxRetries: 3,
+        maxRetries: 1,
       });
 
       // Success — stop trying further models.
@@ -332,6 +331,9 @@ ATS score should evaluate:
       );
 
       const isModelLevelIssue =
+        !status ||
+        status === 408 ||
+        status === 429 ||
         status === 404 ||
         status === 503 ||
         status === 500 ||
@@ -483,7 +485,7 @@ ATS score should evaluate:
 
   /*
   |--------------------------------------------------------------------------
-  | MISSING SKILLS
+            timeout: 20000,
   |--------------------------------------------------------------------------
   */
 
@@ -832,10 +834,23 @@ export const uploadResume = async (
         "The configured Gemini model was not found or is no longer available. Please update GEMINI_MODEL in your .env file.";
     }
 
-    return response.status(500).json({
+    const clientMessage = error.message?.includes("GEMINI_API_KEY")
+      ? "Resume analysis is not configured. Please ask the administrator to configure the Gemini API key."
+      : error.code === "ECONNABORTED" || error.code === "ETIMEDOUT"
+        ? "Resume analysis timed out. Please try again in a moment."
+      : message;
+    const responseStatus = status === 429
+      ? 429
+      : error.code === "ECONNABORTED" || error.code === "ETIMEDOUT"
+        ? 504
+        : status
+          ? 502
+          : 500;
+
+    return response.status(responseStatus).json({
       success: false,
 
-      message,
+      message: clientMessage,
 
       error:
         process.env.NODE_ENV ===

@@ -46,7 +46,7 @@ const questions = [
     },
 ]
 
-const initialAnswers = Object.fromEntries(questions.map((question) => [question.key, 3]))
+const initialAnswers = Object.fromEntries(questions.map((question) => [question.key, null]))
 
 export default function Assessment() {
     const navigate = useNavigate()
@@ -79,7 +79,7 @@ export default function Assessment() {
     }, [])
 
     const progress = useMemo(() => {
-        const answered = Object.values(answers).filter((value) => Number.isInteger(value) && value >= 1).length
+        const answered = Object.values(answers).filter((value) => Number.isInteger(value) && value >= 1 && value <= 5).length
         return Math.round((answered / questions.length) * 100)
     }, [answers])
 
@@ -111,7 +111,7 @@ export default function Assessment() {
             <div className="mx-auto max-w-5xl">
                 <div className="mb-6 flex items-center justify-between gap-4">
                     <div>
-                        <p className="text-sm uppercase tracking-[0.2em] text-cyan-300">Phase 5</p>
+                        <p className="text-sm uppercase tracking-[0.2em] text-cyan-300">Career snapshot</p>
                         <h1 className="mt-2 text-3xl font-semibold">Career Assessment</h1>
                     </div>
                     <button
@@ -181,7 +181,7 @@ export default function Assessment() {
                         </button>
                         <button
                             type="submit"
-                            disabled={loading || fetching}
+                            disabled={loading || fetching || progress < 100}
                             className="rounded-xl bg-cyan-400 px-5 py-3 font-semibold text-slate-950 transition hover:bg-cyan-300 disabled:cursor-not-allowed disabled:opacity-70"
                         >
                             {loading ? 'Saving assessment...' : 'Submit assessment'}

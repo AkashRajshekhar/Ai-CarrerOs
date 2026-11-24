@@ -57,6 +57,32 @@ const careerProfiles = [
     name: "Cloud / DevOps Engineer",
     fields: ["techInterest", "workStyle", "problemSolving", "communication"],
   },
+  {
+    name: "UX Designer",
+    fields: ["creativity", "communication", "careerPreference", "techInterest"],
+  },
+  {
+    name: "Cybersecurity Analyst",
+    fields: ["problemSolving", "techInterest", "mathComfort", "workStyle"],
+  },
+  {
+    name: "Product Manager",
+    fields: [
+      "communication",
+      "creativity",
+      "problemSolving",
+      "careerPreference",
+    ],
+  },
+  {
+    name: "QA Automation Engineer",
+    fields: [
+      "problemSolving",
+      "programmingInterest",
+      "techInterest",
+      "workStyle",
+    ],
+  },
 ];
 
 const calculateAssessmentResult = (answers) => {
@@ -66,11 +92,11 @@ const calculateAssessmentResult = (answers) => {
   }
 
   const scores = careerProfiles.map((career) => {
-    const score = career.fields.reduce(
+    const total = career.fields.reduce(
       (total, field) => total + (normalized[field] || 0),
       0,
     );
-    return { name: career.name, score };
+    return { name: career.name, score: total / career.fields.length };
   });
 
   const sorted = [...scores].sort((a, b) => b.score - a.score);
@@ -110,7 +136,7 @@ const calculateAssessmentResult = (answers) => {
 
   return {
     topCareer: topCareer.name,
-    topCareerScore: topCareer.score,
+    topCareerScore: Math.round(topCareer.score * 20),
     averageScore: Math.round(average * 20),
     strengths,
     gaps,

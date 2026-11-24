@@ -133,6 +133,98 @@ const careerLibrary = {
     ],
     roles: ["DevOps Engineer", "Cloud Engineer", "Site Reliability Engineer"],
   },
+  "UX Designer": {
+    title: "UX Designer",
+    matchLabel: "Creative product fit",
+    summary:
+      "Your answers suggest a strong fit for understanding people, shaping experiences, and turning ideas into clear product flows.",
+    reasons: [
+      "Creative and user-focused thinking",
+      "Strong communication and collaboration potential",
+      "Good fit for design and product discovery",
+    ],
+    skillGaps: [
+      "User research and usability testing",
+      "Interaction design and prototyping",
+      "Accessibility and design systems",
+    ],
+    roadmap: [
+      "Practice user interviews and journey mapping",
+      "Build prototypes in Figma and test them",
+      "Create an accessible case-study portfolio",
+    ],
+    roles: ["UX Designer", "Product Designer", "Interaction Designer"],
+  },
+  "Cybersecurity Analyst": {
+    title: "Cybersecurity Analyst",
+    matchLabel: "Security-minded fit",
+    summary:
+      "You show potential for structured investigation, technical awareness, and dependable security operations.",
+    reasons: [
+      "Analytical problem-solving",
+      "Interest in technology and systems",
+      "Good fit for investigation and process-driven work",
+    ],
+    skillGaps: [
+      "Networking and Linux fundamentals",
+      "Threat detection and incident response",
+      "Security tools and access control",
+    ],
+    roadmap: [
+      "Learn networking, Linux, and common attack patterns",
+      "Practice log analysis in a home lab",
+      "Document security investigations as portfolio projects",
+    ],
+    roles: ["Security Analyst", "SOC Analyst", "Application Security Analyst"],
+  },
+  "Product Manager": {
+    title: "Product Manager",
+    matchLabel: "Product-thinking fit",
+    summary:
+      "You may thrive at the intersection of customer needs, communication, prioritization, and practical delivery.",
+    reasons: [
+      "Clear communication and collaboration",
+      "Interest in solving meaningful user problems",
+      "Good potential for structured prioritization",
+    ],
+    skillGaps: [
+      "Customer discovery and interviews",
+      "Product metrics and analytics",
+      "Roadmapping and stakeholder alignment",
+    ],
+    roadmap: [
+      "Run a small customer discovery exercise",
+      "Write product requirements and success metrics",
+      "Build a case study from idea through validation",
+    ],
+    roles: [
+      "Associate Product Manager",
+      "Product Analyst",
+      "Growth Product Manager",
+    ],
+  },
+  "QA Automation Engineer": {
+    title: "QA Automation Engineer",
+    matchLabel: "Quality-focused fit",
+    summary:
+      "Your profile can fit careful, technical work that improves product quality through repeatable checks and thoughtful investigation.",
+    reasons: [
+      "Structured problem-solving",
+      "Interest in technology and reliable delivery",
+      "Good fit for debugging and continuous improvement",
+    ],
+    skillGaps: [
+      "Test strategy and automation",
+      "API and browser testing",
+      "CI pipelines and defect analysis",
+    ],
+    roadmap: [
+      "Learn test design and Playwright basics",
+      "Automate a realistic web application flow",
+      "Run tests in CI and report defects clearly",
+    ],
+    roles: ["QA Automation Engineer", "Test Engineer", "SDET"],
+  },
 };
 
 export const getRecommendation = async (request, response) => {

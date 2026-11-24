@@ -5,10 +5,12 @@ import { getApiErrorMessage } from '../utils/apiError'
 const AuthContext = createContext(null)
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+axios.defaults.withCredentials = true
 
 const api = axios.create({
     baseURL: API_URL,
     timeout: 10000,
+    withCredentials: true,
 })
 
 export function AuthProvider({ children }) {
@@ -39,21 +41,17 @@ export function AuthProvider({ children }) {
     useEffect(() => {
         const savedToken = localStorage.getItem('careeros-token')
 
-        if (!savedToken) {
-            setLoading(false)
-            return
-        }
-
-        api.defaults.headers.common.Authorization = `Bearer ${savedToken}`
+        if (savedToken) api.defaults.headers.common.Authorization = `Bearer ${savedToken}`
 
         api
             .get('/auth/me')
             .then(async (response) => {
                 setUser(response.data.user)
-                setToken(savedToken)
-                await checkProfile(savedToken)
+                setToken(savedToken || null)
+                await checkProfile(savedToken || null)
             })
             .catch(() => {
+                void api.post('/auth/logout').catch(() => {})
                 localStorage.removeItem('careeros-token')
                 delete api.defaults.headers.common.Authorization
                 setUser(null)
@@ -99,12 +97,18 @@ export function AuthProvider({ children }) {
         return response.data
     }
 
-    const logout = () => {
-        localStorage.removeItem('careeros-token')
-        delete api.defaults.headers.common.Authorization
-        setToken(null)
-        setUser(null)
-        setProfileExists(false)
+    const logout = async () => {
+        try {
+            await api.post('/auth/logout')
+        } catch {
+            // Clear local state even when the API is unreachable.
+        } finally {
+            localStorage.removeItem('careeros-token')
+            delete api.defaults.headers.common.Authorization
+            setToken(null)
+            setUser(null)
+            setProfileExists(false)
+        }
     }
 
     const value = useMemo(

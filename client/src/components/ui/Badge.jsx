@@ -1,4 +1,4 @@
 export default function Badge({ children, tone = 'neutral' }) {
-    const tones = { neutral: 'border-white/10 bg-white/5 text-slate-300', info: 'border-cyan-400/20 bg-cyan-400/10 text-cyan-200', success: 'border-emerald-400/20 bg-emerald-400/10 text-emerald-200', warning: 'border-amber-400/20 bg-amber-400/10 text-amber-200', danger: 'border-red-400/20 bg-red-400/10 text-red-200' }
+    const tones = { neutral: 'border-slate-200 bg-slate-50 text-slate-700', info: 'border-blue-200 bg-blue-50 text-blue-700', success: 'border-green-200 bg-green-50 text-green-800', warning: 'border-amber-200 bg-amber-50 text-amber-800', danger: 'border-red-200 bg-red-50 text-red-700' }
     return <span className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-medium ${tones[tone]}`}>{children}</span>
 }

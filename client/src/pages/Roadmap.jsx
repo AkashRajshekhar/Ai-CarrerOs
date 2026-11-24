@@ -59,7 +59,7 @@ export default function Roadmap() {
         <main className="min-h-screen bg-slate-950 px-4 py-8 text-white">
             <div className="mx-auto max-w-5xl">
                 <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-                    <div><p className="text-sm uppercase tracking-[0.2em] text-cyan-300">Phase 9</p><h1 className="mt-2 text-3xl font-semibold">Personalized Roadmap</h1><p className="mt-2 text-slate-400">Turn your skill gaps into a practical learning plan.</p></div>
+                    <div><p className="text-sm uppercase tracking-[0.2em] text-cyan-300">Your learning path</p><h1 className="mt-2 text-3xl font-semibold">Personalized Roadmap</h1><p className="mt-2 text-slate-400">Turn your skill gaps into a practical learning plan.</p></div>
                     <button type="button" onClick={() => navigate('/dashboard')} className="rounded-full border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 hover:bg-white/10">Back to dashboard</button>
                 </div>
 

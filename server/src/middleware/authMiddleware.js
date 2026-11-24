@@ -4,15 +4,27 @@ import User from "../models/User.js";
 export const protect = async (request, response, next) => {
   try {
     const authHeader = request.headers.authorization;
+    const cookieToken = request.headers.cookie
+      ?.split(";")
+      .map((cookie) => cookie.trim())
+      .find((cookie) => cookie.startsWith("careeros-token="))
+      ?.slice("careeros-token=".length);
+    const bearerToken = authHeader?.startsWith("Bearer ")
+      ? authHeader.slice(7).trim()
+      : "";
+    const token = bearerToken && !["null", "undefined"].includes(bearerToken)
+      ? bearerToken
+      : cookieToken
+        ? decodeURIComponent(cookieToken)
+        : "";
 
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    if (!token) {
       return response.status(401).json({
         success: false,
         message: "Not authorized, token missing",
       });
     }
 
-    const token = authHeader.slice(7).trim();
     if (!token || token.split(".").length !== 3) {
       return response.status(401).json({
         success: false,

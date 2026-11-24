@@ -17,6 +17,7 @@ import skillGapRoutes from "./routes/skillGapRoutes.js";
 import roadmapRoutes from "./routes/roadmapRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import dashboardRoutes from "./routes/dashboardRoutes.js";
+import recruiterRoutes from "./routes/recruiterRoutes.js";
 import { errorHandler, notFound } from "./middleware/errorMiddleware.js";
 
 const envCandidates = [
@@ -43,6 +44,7 @@ const allowedOrigins = new Set([
 
 app.use(
   cors({
+    credentials: true,
     origin: (origin, callback) => {
       if (!origin || allowedOrigins.has(origin)) {
         return callback(null, true);
@@ -85,6 +87,7 @@ app.use("/api/skill-gap", skillGapRoutes);
 app.use("/api/roadmap", roadmapRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/dashboard", dashboardRoutes);
+app.use("/api/recruiter", recruiterRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

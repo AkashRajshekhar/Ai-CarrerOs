@@ -3,9 +3,10 @@ import Job from "../models/Job.js";
 
 export const getAdminOverview = async (_request, response) => {
   try {
-    const [totalUsers, students, admins, recentUsers] = await Promise.all([
+    const [totalUsers, students, recruiters, admins, recentUsers] = await Promise.all([
       User.countDocuments(),
       User.countDocuments({ role: "student" }),
+      User.countDocuments({ role: "recruiter" }),
       User.countDocuments({ role: "admin" }),
       User.find()
         .select("name email role createdAt")
@@ -16,7 +17,7 @@ export const getAdminOverview = async (_request, response) => {
 
     return response.status(200).json({
       success: true,
-      data: { stats: { totalUsers, students, admins }, users: recentUsers },
+      data: { stats: { totalUsers, students, recruiters, admins }, users: recentUsers },
     });
   } catch (error) {
     return response
@@ -28,10 +29,10 @@ export const getAdminOverview = async (_request, response) => {
 export const updateUserRole = async (request, response) => {
   try {
     const { role } = request.body;
-    if (!["student", "admin"].includes(role)) {
+    if (!["student", "recruiter", "admin"].includes(role)) {
       return response
         .status(400)
-        .json({ success: false, message: "Role must be student or admin." });
+        .json({ success: false, message: "Role must be student, recruiter, or admin." });
     }
     if (
       String(request.user._id) === request.params.userId &&

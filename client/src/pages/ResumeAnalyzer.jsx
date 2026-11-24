@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import axios from 'axios'
+import { useAuth } from '../context/AuthContext'
 
 export default function ResumeAnalyzer() {
     const navigate = useNavigate()
+    const { api } = useAuth()
     const [file, setFile] = useState(null)
     const [result, setResult] = useState(null)
     const [loading, setLoading] = useState(false)
@@ -29,10 +30,7 @@ export default function ResumeAnalyzer() {
     useEffect(() => {
         const fetchCurrentAnalysis = async () => {
             try {
-                const token = localStorage.getItem('careeros-token')
-                const response = await axios.get('http://localhost:5000/api/resume', {
-                    headers: { Authorization: `Bearer ${token}` },
-                })
+                const response = await api.get('/resume')
                 setResult(response.data.data)
             } catch (err) {
                 if (err.response?.status !== 404) setError(err.response?.data?.message || 'Unable to load your resume analysis.')
@@ -55,16 +53,10 @@ export default function ResumeAnalyzer() {
         setError('')
 
         try {
-            const token = localStorage.getItem('careeros-token')
             const formData = new FormData()
             formData.append('resume', file)
 
-            const response = await axios.post('http://localhost:5000/api/resume/upload', formData, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
+            const response = await api.post('/resume/upload', formData)
 
             setResult(response.data.data)
         } catch (err) {
@@ -79,7 +71,7 @@ export default function ResumeAnalyzer() {
             <div className="mx-auto max-w-5xl">
                 <div className="mb-6 flex items-center justify-between gap-4">
                     <div>
-                        <p className="text-sm uppercase tracking-[0.2em] text-cyan-300">Phase 7</p>
+                        <p className="text-sm uppercase tracking-[0.2em] text-cyan-300">Resume workshop</p>
                         <h1 className="mt-2 text-3xl font-semibold">Resume Analyzer</h1>
                     </div>
                     <button

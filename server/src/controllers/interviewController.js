@@ -1,83 +1,93 @@
 import Interview from "../models/Interview.js";
 
-const baseQuestions = [
-  {
-    id: "self-intro",
-    prompt: "Tell me about yourself and your career direction.",
-    tips: [
-      "Keep it structured: present, past, future.",
-      "Tie your story to your target career.",
-      "Focus on skills, projects, and motivation.",
-    ],
-  },
-  {
-    id: "strengths",
-    prompt: "What is one of your biggest strengths and how have you used it?",
-    tips: [
-      "Use a concrete example.",
-      "Explain the situation, action, and outcome.",
-      "Connect it to the role you want.",
-    ],
-  },
-  {
-    id: "weakness",
-    prompt: "What is one area you are improving and how are you addressing it?",
-    tips: [
-      "Choose a real but manageable weakness.",
-      "Show self-awareness and initiative.",
-      "Describe what you are doing to improve.",
-    ],
-  },
-  {
-    id: "project",
-    prompt: "Describe a project you are proud of and the impact it had.",
-    tips: [
-      "Use the STAR method.",
-      "Highlight the problem, your approach, and the result.",
-      "Include metrics or user impact whenever possible.",
-    ],
-  },
-  {
-    id: "motivation",
-    prompt: "Why do you want to work in this field or company?",
-    tips: [
-      "Be specific about the role and company.",
-      "Connect your interests to value you can create.",
-      "Show long-term motivation, not just a vague preference.",
-    ],
-  },
+const tips = [
+  "Use a specific example from a project, course, or internship.",
+  "Explain your reasoning and the result, not just the final answer.",
+  "Keep your response structured and connect it to the target role.",
 ];
 
-const roleQuestions = {
+const question = (id, prompt) => ({ id, prompt, tips });
+
+const roleTopics = {
   "Frontend Developer":
-    "Explain how you would make a React interface accessible and responsive.",
-  "Backend Developer":
-    "How would you design and secure a REST API for a production application?",
-  "Full Stack Developer":
-    "Describe how you would build and deploy a full-stack feature end to end.",
+    "component architecture, accessibility, and browser performance",
+  "Backend Developer": "API design, data modeling, and service reliability",
+  "Full Stack Developer": "frontend integration, APIs, and end-to-end delivery",
+  "React Developer": "React rendering, state management, and reusable UI",
+  "Data Analyst": "SQL, data quality, and communicating business insights",
   "AI / ML Engineer":
-    "Explain how you would evaluate whether a machine-learning model is useful.",
+    "model evaluation, data preparation, and machine-learning systems",
+  "Cloud Engineer":
+    "Linux, networking, infrastructure, and deployment automation",
+  "Cloud / DevOps Engineer":
+    "Linux, networking, infrastructure, and deployment automation",
+  "Cybersecurity Analyst":
+    "threat detection, access control, and incident response",
+  "UX Designer": "user research, interaction design, and usability testing",
+  "Product Manager": "customer discovery, prioritization, and product outcomes",
 };
 
+const behavioralQuestions = [
+  ["story", "Tell me about a challenging project and how you handled it."],
+  [
+    "conflict",
+    "Describe a time you disagreed with a teammate. What did you do?",
+  ],
+  ["failure", "Tell me about a mistake you made and what you learned from it."],
+  [
+    "priority",
+    "How do you prioritize when several important tasks arrive together?",
+  ],
+  ["motivation", "Why are you interested in this role and career direction?"],
+].map(([id, prompt]) => question(`behavioral-${id}`, prompt));
+
+const hrQuestions = [
+  [
+    "intro",
+    "Walk me through your background and the kind of work you want next.",
+  ],
+  [
+    "strength",
+    "What strength would your teammates notice first? Give an example.",
+  ],
+  [
+    "growth",
+    "What skill are you currently improving, and how are you practicing it?",
+  ],
+  ["team", "What kind of team environment helps you do your best work?"],
+  ["company", "Why should a company choose you for this role?"],
+].map(([id, prompt]) => question(`hr-${id}`, prompt));
+
 const getQuestions = (role, interviewType) => {
-  const questions = [...baseQuestions];
-  if (roleQuestions[role]) {
-    questions[3] = { ...questions[3], prompt: roleQuestions[role] };
-  }
-  if (interviewType === "Technical" || interviewType === "Coding") {
-    questions[1] = {
-      ...questions[1],
-      prompt: `Explain one important technical concept for a ${role} and give a practical example.`,
-    };
-  }
-  if (interviewType === "HR") {
-    questions[4] = {
-      ...questions[4],
-      prompt:
-        "Why should a company choose you, and how do you work with a team?",
-    };
-  }
-  return questions;
+  const topic =
+    roleTopics[role] || `${role} fundamentals and practical problem-solving`;
+  const technicalPrompts = [
+    `What are the most important principles of ${topic}?`,
+    `How would you debug a production issue related to ${topic}?`,
+    `Design a small project that demonstrates your ability with ${topic}.`,
+    `What trade-offs would you explain when choosing tools for ${topic}?`,
+    `How would you test and monitor a solution involving ${topic}?`,
+  ];
+  const codingPrompts = [
+    `Solve a practical problem commonly faced in ${role} work and explain your approach.`,
+    `How would you break a large ${role} task into smaller testable steps?`,
+    `Describe the edge cases you would check before shipping your solution as a ${role}.`,
+    `How would you improve the performance or maintainability of a ${role} implementation?`,
+    `Explain your approach while reviewing another developer's ${role} code.`,
+  ];
+  const prompts =
+    interviewType === "Technical"
+      ? technicalPrompts
+      : interviewType === "Coding"
+        ? codingPrompts
+        : interviewType === "HR"
+          ? hrQuestions
+          : behavioralQuestions;
+  return prompts.map((item, index) =>
+    item.prompt
+      ? item
+      : question(`${interviewType.toLowerCase()}-${role}-${index}`, item),
+  );
 };
 
 export const getInterviewQuestions = (request, response) => {

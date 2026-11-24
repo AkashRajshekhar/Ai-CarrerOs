@@ -20,9 +20,11 @@ const userSchema = new mongoose.Schema(
       required: [true, "Password is required"],
       minlength: 6,
     },
+    companyName: { type: String, trim: true },
+    savedJobs: [{ type: mongoose.Schema.Types.ObjectId, ref: "Job" }],
     role: {
       type: String,
-      enum: ["student", "admin"],
+      enum: ["student", "recruiter", "admin"],
       default: "student",
     },
   },

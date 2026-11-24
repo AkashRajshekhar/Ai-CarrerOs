@@ -1,15 +1,28 @@
 @import "tailwindcss";
 
 :root {
-  font-family: "Avenir Next", "Segoe UI", sans-serif;
-  color: #e2e8f0;
-  background: #101316;
-  --surface-0: #101316;
-  --surface-1: #171b20;
-  --surface-2: #20262d;
-  --line: rgba(218, 226, 234, 0.12);
-  --muted-blue: #8fa9bd;
-  --accent: #a9c4d6;
+  font-family: Inter, "Avenir Next", ui-sans-serif, system-ui, sans-serif;
+  color: #0f172a;
+  background: #f8fafc;
+  --color-primary: #2563eb;
+  --color-primary-hover: #1d4ed8;
+  --color-primary-light: #eff6ff;
+  --color-primary-border: #bfdbfe;
+  --color-background: #f8fafc;
+  --color-surface: #ffffff;
+  --color-heading: #0f172a;
+  --color-section-heading: #1e293b;
+  --color-body: #334155;
+  --color-secondary: #64748b;
+  --color-placeholder: #94a3b8;
+  --color-border: #e2e8f0;
+  --color-success: #15803d;
+  --color-success-background: #f0fdf4;
+  --color-warning: #d97706;
+  --color-warning-background: #fffbeb;
+  --color-error: #dc2626;
+  --color-error-background: #fef2f2;
+  --shadow-card: 0 1px 3px rgb(15 23 42 / 6%), 0 1px 2px rgb(15 23 42 / 4%);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
@@ -18,45 +31,186 @@
   box-sizing: border-box;
 }
 
-/* Keep the existing layout utilities while giving the product a quieter visual system. */
+/* Keep legacy utility classes while translating them onto one semantic palette. */
 .bg-slate-950 {
-  background-color: #101316 !important;
+  background-color: var(--color-background);
 }
 .bg-slate-900 {
-  background-color: #171b20 !important;
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-card);
 }
 .bg-slate-800 {
-  background-color: #242b32 !important;
+  background-color: var(--color-primary-light);
 }
-.bg-cyan-400 {
-  background-color: #a9c4d6 !important;
+.bg-slate-100,
+.hover\:bg-slate-100:hover,
+.hover\:bg-slate-800:hover,
+.bg-white\/10 {
+  background-color: var(--color-primary-light);
 }
-.text-cyan-300,
-.text-cyan-200,
-.text-cyan-100 {
-  color: #b6cad8 !important;
+.bg-slate-950\/40,
+.bg-slate-950\/50,
+.bg-slate-950\/60 {
+  background-color: var(--color-primary-light);
+}
+.bg-slate-900\/70,
+.bg-white\/4,
+.bg-white\/5,
+.bg-white\/6 {
+  background-color: var(--color-surface);
+}
+.bg-cyan-400,
+.bg-blue-600 {
+  background-color: var(--color-primary);
+}
+.bg-cyan-300,
+.hover\:bg-cyan-300:hover,
+.hover\:bg-blue-700:hover {
+  background-color: var(--color-primary-hover);
+}
+.bg-cyan-400\/5,
+.bg-cyan-400\/10,
+.bg-cyan-400\/15,
+.bg-cyan-500\/10,
+.bg-violet-500\/10 {
+  background-color: var(--color-primary-light);
+}
+.hover\:bg-white\/5:hover,
+.hover\:bg-white\/10:hover {
+  background-color: var(--color-primary-light);
+}
+
+.text-white {
+  color: var(--color-heading);
 }
 .text-slate-950 {
-  color: #111519 !important;
+  color: var(--color-heading);
 }
-.border-cyan-400,
+.text-slate-100,
+.text-slate-200 {
+  color: var(--color-section-heading);
+}
+.text-slate-300,
+.text-slate-400 {
+  color: var(--color-body);
+}
+.text-slate-500 {
+  color: var(--color-secondary);
+}
+.text-slate-600,
+.placeholder\:text-slate-400::placeholder,
+.placeholder\:text-slate-500::placeholder,
+.placeholder\:text-slate-600::placeholder {
+  color: var(--color-placeholder);
+}
+.text-cyan-100,
+.text-cyan-200,
+.text-cyan-300,
+.text-cyan-700,
+.text-violet-200,
+.text-violet-300,
+.text-blue-700 {
+  color: var(--color-primary);
+}
+.hover\:text-blue-700:hover {
+  color: var(--color-primary-hover);
+}
+.text-emerald-100,
+.text-emerald-200,
+.text-emerald-300,
+.text-green-700 {
+  color: var(--color-success);
+}
+.text-amber-200,
+.text-amber-300,
+.text-amber-800 {
+  color: var(--color-warning);
+}
+.text-red-200,
+.text-red-300,
+.text-red-700 {
+  color: var(--color-error);
+}
+.bg-cyan-400.text-slate-950,
+.bg-cyan-400 .text-slate-950,
+.bg-cyan-400.text-white,
+.bg-cyan-400 .text-white,
+.bg-blue-600.text-white,
+.bg-blue-700.text-white,
+.bg-cyan-300.text-slate-950,
+.bg-cyan-300.text-white {
+  color: #ffffff;
+}
+
+.border-white\/10,
+.border-white\/5,
+.border-white\/15,
+.border-slate-700 {
+  border-color: var(--color-border);
+}
+.border-cyan-400\/20,
+.border-cyan-400\/30,
+.border-cyan-400\/40,
 .border-cyan-500\/20,
-.border-cyan-400\/30 {
-  border-color: rgba(169, 196, 214, 0.42) !important;
+.border-blue-200,
+.border-blue-300 {
+  border-color: var(--color-primary-border);
 }
-.bg-cyan-400\/10,
-.bg-cyan-500\/10,
-.bg-cyan-400\/5 {
-  background-color: rgba(143, 169, 189, 0.12) !important;
+.border-emerald-400\/30,
+.border-emerald-500\/20 {
+  border-color: #86efac;
 }
-.shadow-cyan-950\/30 {
-  --tw-shadow-color: rgba(0, 0, 0, 0.25) !important;
+.border-amber-400\/30,
+.border-amber-500\/20 {
+  border-color: #fde68a;
+}
+.border-red-400\/30,
+.border-red-500\/40 {
+  border-color: #fecaca;
+}
+.bg-emerald-400\/10,
+.bg-emerald-500\/10,
+.bg-green-50 {
+  background-color: var(--color-success-background);
+}
+.bg-amber-400\/10,
+.bg-amber-500\/10,
+.bg-amber-400\/5 {
+  background-color: var(--color-warning-background);
+}
+.bg-red-400\/10,
+.bg-red-400\/20,
+.bg-red-500\/10,
+.bg-red-500\/5,
+.hover\:bg-red-100:hover {
+  background-color: var(--color-error-background);
+}
+.hover\:border-cyan-400\/40:hover,
+.hover\:border-cyan-400:hover,
+.focus\:border-cyan-400:focus {
+  border-color: var(--color-primary-border);
+}
+.hover\:text-white:hover {
+  color: var(--color-primary);
+}
+.shadow-cyan-950\/30,
+.shadow-2xl,
+.shadow-lg {
+  --tw-shadow: var(--shadow-card);
+  box-shadow: var(--shadow-card);
+}
+.rounded-3xl {
+  border-radius: 16px;
+}
+.rounded-2xl {
+  border-radius: 14px;
 }
 
 body {
   margin: 0;
-  min-width: 320px;
-  background: var(--surface-0);
+  min-width: 0;
+  background: var(--color-background);
+  color: var(--color-body);
   overflow-x: hidden;
 }
 
@@ -65,6 +219,35 @@ input,
 textarea,
 select {
   max-width: 100%;
+}
+
+input,
+textarea,
+select {
+  color: var(--color-heading);
+  background-color: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+input.bg-slate-950,
+textarea.bg-slate-950,
+select.bg-slate-950 {
+  background-color: var(--color-surface);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-placeholder);
+  opacity: 1;
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--color-primary-border);
+  outline-offset: 2px;
 }
 
 @media (max-width: 640px) {

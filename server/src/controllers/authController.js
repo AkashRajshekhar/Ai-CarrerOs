@@ -2,6 +2,27 @@ import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
 
+const cookieOptions = () => {
+  const sameSite = (process.env.AUTH_COOKIE_SAME_SITE || "lax").toLowerCase();
+  return {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production" || sameSite === "none",
+    sameSite,
+    path: "/",
+  };
+};
+
+const setAuthCookie = (response, token) => {
+  response.cookie("careeros-token", token, {
+    ...cookieOptions(),
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  });
+};
+
+const clearAuthCookie = (response) => {
+  response.clearCookie("careeros-token", cookieOptions());
+};
+
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 };
@@ -10,6 +31,8 @@ export const signup = async (request, response) => {
   try {
     const name = request.body.name?.trim();
     const email = request.body.email?.trim().toLowerCase();
+    const role = request.body.role || "student";
+    const companyName = request.body.companyName?.trim();
     const { password, confirmPassword } = request.body;
 
     if (!name || !email || !password || !confirmPassword) {
@@ -41,6 +64,20 @@ export const signup = async (request, response) => {
       });
     }
 
+    if (!["student", "recruiter"].includes(role)) {
+      return response.status(400).json({
+        success: false,
+        message: "Please select a valid account type.",
+      });
+    }
+
+    if (role === "recruiter" && !companyName) {
+      return response.status(400).json({
+        success: false,
+        message: "Company name is required for recruiter accounts.",
+      });
+    }
+
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return response.status(409).json({
@@ -56,9 +93,12 @@ export const signup = async (request, response) => {
       name,
       email,
       password: hashedPassword,
+      role,
+      ...(role === "recruiter" ? { companyName } : {}),
     });
 
     const token = generateToken(user._id);
+    setAuthCookie(response, token);
 
     return response.status(201).json({
       success: true,
@@ -69,13 +109,19 @@ export const signup = async (request, response) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        companyName: user.companyName,
       },
     });
   } catch (error) {
+    if (error.code === 11000 && error.keyPattern?.email) {
+      return response.status(409).json({
+        success: false,
+        message: "User with this email already exists",
+      });
+    }
     return response.status(500).json({
       success: false,
       message: "Server error during signup",
-      error: error.message,
     });
   }
 };
@@ -109,6 +155,7 @@ export const login = async (request, response) => {
     }
 
     const token = generateToken(user._id);
+    setAuthCookie(response, token);
 
     return response.status(200).json({
       success: true,
@@ -119,6 +166,7 @@ export const login = async (request, response) => {
         name: user.name,
         email: user.email,
         role: user.role,
+        companyName: user.companyName,
       },
     });
   } catch (error) {
@@ -146,6 +194,7 @@ export const getCurrentUser = async (request, response) => {
 };
 
 export const logout = (request, response) => {
+  clearAuthCookie(response);
   return response.status(200).json({
     success: true,
     message: "Logged out successfully",
@@ -180,6 +229,11 @@ export const updateAccount = async (request, response) => {
 
     return response.status(200).json({ success: true, user });
   } catch (error) {
+    if (error.code === 11000 && error.keyPattern?.email) {
+      return response
+        .status(409)
+        .json({ success: false, message: "That email is already in use." });
+    }
     return response
       .status(500)
       .json({ success: false, message: "Unable to update account." });
@@ -231,6 +285,7 @@ export const changePassword = async (request, response) => {
 export const deleteAccount = async (request, response) => {
   try {
     await User.findByIdAndDelete(request.user._id);
+    clearAuthCookie(response);
     return response
       .status(200)
       .json({ success: true, message: "Account deleted successfully." });

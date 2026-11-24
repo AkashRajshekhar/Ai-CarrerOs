@@ -8,6 +8,8 @@ export default function Signup() {
     const [form, setForm] = useState({
         name: '',
         email: '',
+        role: 'student',
+        companyName: '',
         password: '',
         confirmPassword: '',
     })
@@ -28,7 +30,7 @@ export default function Signup() {
 
         try {
             await signup(form)
-            navigate('/onboarding')
+            navigate(form.role === 'recruiter' ? '/recruiter' : '/onboarding')
         } catch (err) {
             setError(err.userMessage || err.response?.data?.message || 'Unable to create account. Please try again.')
         } finally {
@@ -49,6 +51,17 @@ export default function Signup() {
                 )}
 
                 <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+                    <div>
+                        <label htmlFor="role" className="mb-1 block text-sm text-slate-300">Account type</label>
+                        <select id="role" name="role" value={form.role} onChange={handleChange} className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-white outline-none focus:border-cyan-400">
+                            <option value="student">Candidate</option>
+                            <option value="recruiter">Recruiter</option>
+                        </select>
+                    </div>
+                    {form.role === 'recruiter' && <div>
+                        <label htmlFor="companyName" className="mb-1 block text-sm text-slate-300">Company name</label>
+                        <input id="companyName" name="companyName" type="text" value={form.companyName} onChange={handleChange} className="w-full rounded-xl border border-slate-700 bg-slate-950 px-3 py-2.5 text-white outline-none focus:border-cyan-400" required />
+                    </div>}
                     <div>
                         <label htmlFor="name" className="mb-1 block text-sm text-slate-300">Full name</label>
                         <input

@@ -52,7 +52,7 @@ export default function SkillGap() {
             <div className="mx-auto max-w-5xl">
                 <div className="mb-8 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
                     <div>
-                        <p className="text-sm uppercase tracking-[0.2em] text-cyan-300">Phase 8</p>
+                        <p className="text-sm uppercase tracking-[0.2em] text-cyan-300">Skills to build</p>
                         <h1 className="mt-2 text-3xl font-semibold">Skill Gap Analysis</h1>
                         <p className="mt-2 text-slate-400">See what to learn next for your target career.</p>
                     </div>
