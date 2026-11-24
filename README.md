@@ -1,46 +1,46 @@
 # AI CareerOS 🚀
 
-AI CareerOS is an AI-powered career guidance platform built with the **MERN stack**. It helps students analyze their resumes, find suitable career paths, identify skill gaps, and prepare for jobs and interviews.
+AI CareerOS is an AI-powered career guidance platform built using the **MERN Stack**. It helps students analyze resumes, discover career paths, identify skill gaps, and prepare for jobs and interviews.
 
 ## ✨ Features
 
-* 🔐 JWT-based Authentication
-* 📄 AI Resume Analyzer
-* 🎯 AI Career Recommendations
-* 📊 Skill Gap Analysis
-* 🗺️ Personalized Learning Roadmap
-* 💼 AI Job Matching
-* 🎤 AI Interview Preparation
-* 🤖 AI Career Assistant
-* 📈 Career Progress Dashboard
-* 🧑‍💼 Recruiter job management and application review
-* 🔖 Candidate job saving and application tracking
+- 🔐 JWT-based Authentication
+- 📄 AI Resume Analyzer
+- 🎯 AI Career Recommendations
+- 📊 Skill Gap Analysis
+- 🗺️ Personalized Learning Roadmap
+- 💼 AI Job Matching
+- 🎤 AI Interview Preparation
+- 🤖 AI Career Assistant
+- 📈 Career Progress Dashboard
 
 ## 🛠️ Tech Stack
 
-**Frontend:** React.js, Vite, Tailwind CSS, Axios
-**Backend:** Node.js, Express.js, JWT, bcrypt
-**Database:** MongoDB, Mongoose
-**AI:** LLM API
+**Frontend:** React.js, Vite, Tailwind CSS
 
-## ⚙️ Setup
+**Backend:** Node.js, Express.js
+
+**Database:** MongoDB, Mongoose
+
+**AI Integration:** LLM API
+
+## 🚀 Installation & Setup
+
+### 1. Clone the Repository
 
 ```bash
-# Clone repository
-git clone https://github.com/YOUR_USERNAME/ai-careeros.git
-
-# Frontend
-cd client
-npm install
-npm run dev
-
-# Backend
-cd ../server
-npm install
-npm run dev
+git clone https://github.com/AkashRajshekhar/Ai-CarrerOs.git
+cd Ai-CarrerOs
 ```
 
-Create a `.env` file in the `server` folder:
+### 2. Backend Setup
+
+```bash
+cd server
+npm install
+```
+
+Create a `.env` file inside the `server` directory:
 
 ```env
 PORT=5000
@@ -50,31 +50,38 @@ AI_API_KEY=your_ai_api_key
 AI_API_URL=your_ai_api_url
 ```
 
-The API reads `MONGODB_URI` from the server or repository root `.env` file. Recruiter accounts require a company name and are not independently verified. Recruiters can manage their own postings and review applications; candidates can save jobs and submit one application per listing.
-
-To add the labeled demonstration listings to the configured MongoDB database, run:
+Start the backend:
 
 ```bash
-npm run seed:jobs --prefix server
+npm run dev
 ```
 
-These records are explicitly marked as samples and are not verified vacancies.
+### 3. Frontend Setup
+
+Open a new terminal:
+
+```bash
+cd client
+npm install
+npm run dev
+```
 
 ## 📂 Project Structure
 
 ```text
 AI-CareerOS/
-├── client/     # React frontend
-├── server/     # Node.js + Express backend
+├── client/       # React frontend
+├── server/       # Node.js + Express backend
 ├── README.md
 └── .gitignore
 ```
 
-## 🎯 Goal
+## 🎯 Project Goal
 
-To provide students with a single AI-powered platform for **career planning, resume improvement, skill development, job matching, and interview preparation**.
+To provide students with a single AI-powered platform for career planning, resume improvement, skill development, job matching, and interview preparation.
 
 ## 👨‍💻 Author
 
 **Akash Rajshekhar**
+
 B.Tech IT Student
